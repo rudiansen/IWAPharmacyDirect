@@ -119,13 +119,7 @@
 
         <th:block layout:fragment="script">
             <script type="text/javascript" th:src="@{/js/components/Cart.js}"></script>
-            <script type="text/javascript" th:inline="javascript">
-                (function ($) {
-                    $(document).ready(function () {
-                        $('#shopping-cart').Cart( { currencySymbol: /*[[${currencySymbol}]]*/ '&#164;' } );
-                    });
-                })(jQuery);
-            </script>
+            <script type="text/javascript" th:src="@{/js/templates/cart.js}"></script>
         </th:block>
     </body>
 </html>

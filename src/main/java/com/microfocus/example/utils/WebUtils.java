@@ -21,10 +21,13 @@ package com.microfocus.example.utils;
 
 import com.microfocus.example.entity.Authority;
 import com.microfocus.example.entity.User;
+import org.owasp.esapi.ESAPI;
 import org.springframework.security.core.Authentication;
 
 import java.security.Principal;
 import java.util.Set;
+
+import org.owasp.esapi.ESAPI.*;
 
 /**
  * Customer Web Utilities
@@ -63,6 +66,24 @@ public class WebUtils {
            loggedInUser = User.fromUserDetails(user);
         }
         return loggedInUser;
+    }
+
+    /**
+     * Utility method for sanitizing a String to neutralize any possible malicious content. This is used primarily to protect log
+     * messages by encoding for any possible forgery or injection attempts.
+     *
+     * Given an Object of type Integer or Long, converts the Object instance to a Long.  This will throw a ClassCastException
+     * if the past parameter is not either an Integer or a Long.
+     *
+     * @param string
+     * @return String
+     */
+    public static String sanitize(String string) {
+        if (string == null) {
+            return "NULL";
+        }
+        String sanitized = string.replace('\n', '_').replace('\r', '_');
+        return ESAPI.encoder().encodeForHTML(sanitized);
     }
 
 }

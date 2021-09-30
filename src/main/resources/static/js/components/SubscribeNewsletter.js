@@ -10,10 +10,10 @@ $.fn.SubscribeNewsletter = function (options) {
         $this.find('#email-subscribe-button').on('click', function () {
             if (_validateEmail($email.val())) {
                 _saveEmail($email.val()).then(response => {
-                    if (response.success) {
+                    if (response) {
                         _showConfirmationText("Thankyou your email address '" + $email.val() + "' has been registered.", "text-success");
                     } else {
-                        _showConfirmationText("There was an error registering your email address.", "text-danger");
+                        _showConfirmationText("There was a response error registering your email address.", "text-danger");
                     }
                 }).catch(error => {
                     _showConfirmationText("There was an error registering your email address.", "text-danger");
@@ -34,7 +34,20 @@ $.fn.SubscribeNewsletter = function (options) {
     }
 
     async function _saveEmail(email) {
-        return await $.post("/api/v3/site/subscribe-user", { firstName: "", lastName: "", email: email }).then();
+        let data = JSON.stringify(
+            {
+                firstName: "",
+                lastName: "",
+                email: email
+            }
+        )
+        return await $.ajax({
+            url: '/api/v3/site/subscribe-user',
+            type: 'POST',
+            contentType: 'application/json',
+            data: data
+        }).then();
+        //return await $.post("/api/v3/site/subscribe-user", { firstName: "", lastName: "", email: email }, "json").then();
     }
 
     function _validateEmail(email) {

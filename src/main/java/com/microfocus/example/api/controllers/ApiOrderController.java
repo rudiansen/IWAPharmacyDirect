@@ -26,6 +26,7 @@ import com.microfocus.example.payload.response.ApiStatusResponse;
 import com.microfocus.example.payload.response.OrderResponse;
 import com.microfocus.example.payload.response.ProductResponse;
 import com.microfocus.example.service.ProductService;
+import com.microfocus.example.utils.WebUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -98,16 +99,18 @@ public class ApiOrderController {
             @Parameter(description = "Maximum records to return. The maximum value allowed is 50.") @RequestParam("limit") Optional<Integer> limit) {
         log.debug("API::Retrieving orders by keyword(s)");
         // TODO: implement keywords, offset and limit
-        if (keywords.equals(Optional.empty())) {
+        String safeKeywords = "";
+        if (keywords.isPresent())
+            safeKeywords = WebUtils.sanitize(keywords.get());
+        if (safeKeywords.equals("")) {
             return ResponseEntity.ok().body(
                     productService.getAllOrders().stream()
                             .map(OrderResponse::new)
                             .collect(Collectors.toList()));
         } else {
-            String k = (keywords.orElse(""));
             Integer o = (offset.orElse(0));
             return new ResponseEntity<>(
-                    productService.getAllOrders(o, k).stream()
+                    productService.getAllOrders(o, safeKeywords).stream()
                             .map(OrderResponse::new)
                             .collect(Collectors.toList()), HttpStatus.OK);
         }

@@ -24,10 +24,7 @@ import com.microfocus.example.entity.User;
 import com.microfocus.example.payload.request.LoginRequest;
 import com.microfocus.example.payload.request.RegisterUserRequest;
 import com.microfocus.example.payload.request.SubscribeUserRequest;
-import com.microfocus.example.payload.response.ApiStatusResponse;
-import com.microfocus.example.payload.response.JwtResponse;
-import com.microfocus.example.payload.response.RegisterUserResponse;
-import com.microfocus.example.payload.response.SubscribeUserResponse;
+import com.microfocus.example.payload.response.*;
 import com.microfocus.example.repository.RoleRepository;
 import com.microfocus.example.repository.UserRepository;
 import com.microfocus.example.service.UserService;
@@ -48,6 +45,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -171,10 +169,13 @@ public class ApiSiteController {
     })
     @PostMapping(value = {"/register-user"}, produces = {"application/json"}, consumes = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<RegisterUserResponse> registerUser(
+    public ResponseEntity<ApiStatusResponse> registerUser(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody RegisterUserRequest newUser) {
-        log.debug("API::Registering new user: " + newUser.toString());
-        return new ResponseEntity<>(userService.registerUser(newUser), HttpStatus.CREATED);
+        log.debug("API::Registering new user");
+        RegisterUserResponse user = userService.registerUser(newUser);
+        ApiStatusResponse response = new ApiStatusResponse();
+        if (user.getEmail().equals(newUser.getEmail())) response.setSuccess(true);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @Operation(summary = "Subscribe a new user", description = "Subscribe a new user to the newsletter", tags = {"site"})
@@ -186,10 +187,13 @@ public class ApiSiteController {
     })
     @PostMapping(value = {"/subscribe-user"}, produces = {"application/json"}, consumes = {"application/json"})
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<SubscribeUserResponse> subscribeUser(
+    public ResponseEntity<ApiStatusResponse> subscribeUser(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody SubscribeUserRequest newUser) {
-        log.debug("API::Subscribing a user to the newsletter: " + newUser.toString());
-        return new ResponseEntity<>(userService.subscribeUser(newUser), HttpStatus.OK);
+        log.debug("API::Subscribing a user to the newsletter");
+        SubscribeUserResponse user = userService.subscribeUser(newUser);
+        ApiStatusResponse response = new ApiStatusResponse();
+        if ((user.getEmail().equals(newUser.getEmail())))  response.setSuccess(true);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Operation(summary = "Sign in", description = "Sign in to the system", tags = {"site"})
@@ -202,7 +206,7 @@ public class ApiSiteController {
     })
     @PostMapping(value = {"/sign-in"}, produces = {"application/json"}, consumes = {"application/json"})
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> signIn(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<JwtResponse> signIn(@Valid @RequestBody LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -213,7 +217,7 @@ public class ApiSiteController {
         CustomUserDetails iwaUser = (CustomUserDetails) authentication.getPrincipal();
         User user = iwaUser.getUserDetails();
         List<String> roles = authentication.getAuthorities().stream()
-                .map(item -> item.getAuthority())
+                .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(new JwtResponse(jwt,

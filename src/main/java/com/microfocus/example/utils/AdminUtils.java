@@ -42,8 +42,7 @@ public class AdminUtils {
     public static int startDbBackup(String profile) throws BackupException {
         int backupId = 0;
 
-// Uncomment the following for more secure example:
-/*
+
         String profileName = "default";
         switch (profile) {
         	case "quick": 	profileName = "quick";
@@ -55,7 +54,6 @@ public class AdminUtils {
         }
         if (profile.matches("^.*[^a-zA-Z0-9 ].*$"))
             throw new BackupException("Profile contains non alpha numeric characters, cannot start backup");
-*/
 
         String[] backupCommand = {
                 "cmd.exe", "/K", "dir", "c:\\util\\backup.bat",
@@ -81,15 +79,8 @@ public class AdminUtils {
 
     public static String getDbStatus(int backupId) {
 
-// Uncomment the following for more secure example:
-/*
         if (Boolean.parseBoolean(isLocked(backupId))) {
             return "LOCKED";
-        }
-*/
-
-        if(Boolean.getBoolean(isLocked(backupId))){
-            return"LOCKED";
         }
         return isReady(backupId);
     }
@@ -104,8 +95,6 @@ public class AdminUtils {
 
     private static int genId() {
 
-// Uncomment the following for more secure example:
-/*
         SecureRandom sr = new SecureRandom();
         try {
             sr = SecureRandom.getInstance("SHA1PRNG");
@@ -113,11 +102,6 @@ public class AdminUtils {
             log.error(ignored.getMessage());
         }
         return sr.nextInt(Integer.MAX_VALUE);
- */
-
-        Random r=new Random();
-        r.setSeed(12345);
-        return r.nextInt();
     }
 
     private static String isLocked(int backupId) {

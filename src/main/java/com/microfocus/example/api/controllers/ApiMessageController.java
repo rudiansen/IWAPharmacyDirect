@@ -25,6 +25,7 @@ import com.microfocus.example.entity.Message;
 import com.microfocus.example.exception.MessageNotFoundException;
 import com.microfocus.example.service.UserService;
 import com.microfocus.example.payload.response.MessageResponse;
+import com.microfocus.example.utils.WebUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -78,17 +79,20 @@ public class ApiMessageController {
             @Parameter(description = "Maximum records to return. The maximum value allowed is 50.") @RequestParam("limit") Optional<Integer> limit) {
         log.debug("API::Retrieving messages by keyword(s)");
         // TODO: implement keywords, offset and limit
-        if (keywords.equals(Optional.empty())) {
-            return ResponseEntity.ok().body(
-                userService.getAllMessages().stream()
-                    .map(MessageResponse::new)
-                    .collect(Collectors.toList()));
-        } else {
+        //String safeKeywords = "";
+        //if (keywords.isPresent())
+        //    safeKeywords = WebUtils.sanitize(keywords.get());
+        //if (keywords.equals(Optional.empty())) {
+        //    return ResponseEntity.ok().body(
+        //        userService.getAllMessages().stream()
+        //            .map(MessageResponse::new)
+        //            .collect(Collectors.toList()));
+        //} else {
             return new ResponseEntity<>(
                 userService.getAllMessages().stream()
                     .map(MessageResponse::new)
                     .collect(Collectors.toList()), HttpStatus.OK);
-        }
+        //}
     }
 
     @Operation(summary = "Find message by Id", description = "Find a message by UUID", tags = {"message"}, security = @SecurityRequirement(name = "JWT Authentication"))

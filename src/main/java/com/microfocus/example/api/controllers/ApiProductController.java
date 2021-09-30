@@ -25,6 +25,7 @@ import com.microfocus.example.entity.Product;
 import com.microfocus.example.exception.ProductNotFoundException;
 import com.microfocus.example.payload.response.ProductResponse;
 import com.microfocus.example.service.ProductService;
+import com.microfocus.example.utils.WebUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -79,10 +80,12 @@ public class ApiProductController {
         if (limit.isPresent()) {
             productService.setPageSize(limit.orElse(productService.getPageSize()));
         }
-        String k = (keywords.orElse(""));
+        String safeKeywords = "";
+        if (keywords.isPresent())
+            safeKeywords = WebUtils.sanitize(keywords.get());
         Integer o = (offset.orElse(0));
         return new ResponseEntity<>(
-            productService.getAllProducts(o, k).stream()
+            productService.getAllProducts(o, safeKeywords).stream()
                 .map(ProductResponse::new)
                 .collect(Collectors.toList()), HttpStatus.OK);
     }

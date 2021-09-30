@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2021 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -103,6 +103,11 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .antMatchers("/api/test/**").permitAll()
                     .anyRequest().authenticated();*/
 
+            httpSecurity.headers()
+                    .contentSecurityPolicy("script-src 'self' 'sha256-dA0PBpwclVoHSWeHOpwop9dgOu03DROUr9BScTT7iec='; object-src 'none'; base-uri 'self'");
+            httpSecurity.headers()
+                    .frameOptions().sameOrigin();
+
             httpSecurity.antMatcher("/api/**")
                     .authorizeRequests()
                     .antMatchers("/api/v3/site/**").permitAll()
@@ -136,13 +141,13 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
             if (activeProfile.contains("dev")) {
                 log.info("Running development profile");
                 httpSecurity.csrf().disable();
-                httpSecurity.headers().frameOptions().disable();
             }
 
-            /*
-            http.headers()
-           .contentSecurityPolicy("script-src 'self' https://trustedscripts.example.com; object-src https://trustedplugins.example.com; report-uri /csp-report-endpoint/");
-             */
+            httpSecurity.headers()
+                    .contentSecurityPolicy("script-src 'self' 'sha256-dA0PBpwclVoHSWeHOpwop9dgOu03DROUr9BScTT7iec='; object-src 'none'; base-uri 'self'");
+            httpSecurity.headers()
+                    .frameOptions().sameOrigin();
+
             httpSecurity.authorizeRequests()
                     .antMatchers("/",
                             "/products/**",

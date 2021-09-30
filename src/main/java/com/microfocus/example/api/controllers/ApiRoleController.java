@@ -74,11 +74,11 @@ public class ApiRoleController {
             @Parameter(description = "Maximum records to return. The maximum value allowed is 50.") @RequestParam("limit") Optional<Integer> limit) {
         log.debug("API::Retrieving roles by keyword(s)");
         // TODO: implement keywords, offset and limit
-        if (keywords.equals(Optional.empty())) {
-            return ResponseEntity.ok().body(roleService.getAllRoles());
-        } else {
+        //if (keywords.equals(Optional.empty())) {
+        //    return ResponseEntity.ok().body(roleService.getAllRoles());
+        //} else {
             return new ResponseEntity<>(roleService.getAllRoles(), HttpStatus.OK);
-        }
+        //}
     }
 
     @Operation(summary = "Find role Id", description = "Find a specific role by its UUID", tags = {"roles"}, security = @SecurityRequirement(name = "JWT Authentication"))

@@ -82,6 +82,8 @@
                             </p>
                         </div>
 
+                        <input type="hidden" id="product-id" th:value="${product.id}"/>
+
                         <div class="confirmation-modal">
                             <div id="checkout-now-modal" role="dialog" aria-hidden="true" class="modal fade" style="display: none;">
                                 <div class="modal-dialog modal-md">
@@ -118,11 +120,7 @@
 
     <th:block layout:fragment="script">
         <script type="text/javascript" th:src="@{/js/components/CartAdd.js}"></script>
-        <script type="text/javascript" th:inline="javascript">
-            (function ($) {
-                $('.cart-add').CartAdd({ pid: /*[[${product.id}]]*/ 'unknown' });
-            })(jQuery);
-        </script>
+        <script type="text/javascript" th:src="@{/js/templates/cart-add.js}"></script>
     </th:block>
 </body>
 </html>

@@ -82,6 +82,8 @@
 
                             </div>
                         </div>
+                        <input type="hidden" id="user-id" th:value="${session.userId}"/>
+                        <input type="hidden" id="jwt-token" th:value="${session.jwtToken}"/>
                         </p>
                     </div>
                 </div>
@@ -98,19 +100,7 @@
             <script type="text/javascript" th:src="@{/js/components/CartCount.js}"></script>
             <script type="text/javascript" th:src="@{/js/components/UnreadMessageCount.js}"></script>
 
-            <script th:inline="javascript">
-                /*<![CDATA[*/
-                var userId = /*[[${session.userId}]]*/ 'User Id';
-                var jwtToken = /*[[${session.jwtToken}]]*/ 'JWT Token';
-                /*]]>*/
-                (function ($) {
-                    $(document).ready(function () {
-                        $('#subscribe-newsletter').SubscribeNewsletter();
-                        $('#shopping-cart-count').CartCount();
-                        $('#unread-message-count').UnreadMessageCount();
-                    });
-                })(jQuery);
-            </script>
+            <script type="text/javascript" th:src="@{/js/templates/footer.js}"></script>
 
             <script type="text/javascript" th:src="@{/js/app.js}"></script>
 

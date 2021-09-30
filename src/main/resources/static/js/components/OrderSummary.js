@@ -25,7 +25,6 @@ $.fn.OrderSummary = function (options) {
         if (size > 0) {
             orderIsEmpty = false;
             $.each(order, function (i, product) {
-                console.log(product)
                 $('#item-table>tbody').append(
                     "<tr id='" + product.id + "'>" +
                     "<td>" + product.name + "<strong class='mx-2'>x</strong><span class='product-quantity text-xs-right'>" + product.quantity + "</span></td>" +

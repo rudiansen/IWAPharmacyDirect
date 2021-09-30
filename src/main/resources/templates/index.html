@@ -153,13 +153,7 @@
 
         <th:block layout:fragment="script">
             <script type="text/javascript" th:src="@{/js/components/NewProducts.js}"></script>
-            <script type="text/javascript" th:inline="javascript">
-                (function ($) {
-                    $(document).ready(function () {
-                        $('#new-products').NewProducts({ currencySymbol : /*[[${currencySymbol}]]*/ '&#164;'});
-                    });
-                })(jQuery);
-            </script>
+            <script type="text/javascript" th:src="@{/js/templates/new-products.js}"></script>
         </th:block>
     </body>
 </html>

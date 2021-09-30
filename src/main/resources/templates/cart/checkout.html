@@ -282,13 +282,7 @@
 
         <th:block layout:fragment="script">
             <script type="text/javascript" th:src="@{/js/components/CartSummary.js}"></script>
-            <script type="text/javascript" th:inline="javascript">
-                (function ($) {
-                    $(document).ready(function () {
-                        $('#cart-summary').CartSummary( { currencySymbol : /*[[${currencySymbol}]]*/ '&#164;'} );
-                    });
-                })(jQuery);
-            </script>
+            <script type="text/javascript" th:src="@{/js/templates/cart-summary.js}"></script>
         </th:block>
     </body>
 </html>
