@@ -123,9 +123,9 @@ pipeline {
 
                     // Run maven to build WAR/JAR application
                     if (isUnix()) {
-                        sh 'mvn -Dmaven.com.failure.ignore=true clean -Dtest=!*PasswordConstraintValidatorTest,!*DefaultControllerTest -P jar,release clean package'
+                        sh 'mvn "-Dskip.unit.tests=false" -Dtest="*Test,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest,!SeleniumFlowIT" -P jar -B clean verify package --file pom.xml'
                     } else {
-                        bat "mvn -Dmaven.com.failure.ignore=true -Dtest=!*PasswordConstraintValidatorTest,!*DefaultControllerTest -P jar,release clean package"
+                        bat "mvn \"-Dskip.unit.tests=false\" Dtest=\"*Test,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest,!SeleniumFlowIT\" -P jar -B clean verify package --file pom.xml"
                     }
                 }
             }
