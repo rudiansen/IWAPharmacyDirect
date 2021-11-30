@@ -65,7 +65,7 @@ pipeline {
         JAVA_VERSION = 8                                    // Java version to compile as           
 
         // Credential references        
-        SSC_AUTH_TOKEN = credentials('iwa-ssc-ci-token-id')    
+        //SSC_AUTH_TOKEN = credentials('iwa-ssc-ci-token-id')    
 
         // The following are defaulted and can be overriden by creating a "Build parameter" of the same name
         SSC_URL = "${params.SSC_URL ?: 'http://10.87.1.12:8080/ssc'}" // URL of Fortify Software Security Center
