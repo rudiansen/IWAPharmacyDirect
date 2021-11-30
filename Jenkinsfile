@@ -75,10 +75,10 @@ pipeline {
         SSC_SENSOR_POOL_UUID = "${params.SSC_SENSOR_POOL_UUID ?: '00000000-0000-0000-0000-000000000002'}" // UUID of Scan Central Sensor Pool to use - leave for Default Pool        
     }
 
-    tools {
-        // Install the Maven version configured as "M3" and add it to the path.
-        maven 'M3'
-    }
+    // tools {
+    //     // Install the Maven version configured as "M3" and add it to the path.
+    //     maven 'M3'
+    // }
 
     stages {
         stage('Build') {
@@ -86,7 +86,8 @@ pipeline {
             agent { label 'poc-sss' }
             steps {
                 // Get some code from a GitHub repository
-                git credentialsId: 'iwa-git-creds-id', url: "${env.GIT_URL}"
+                // git credentialsId: 'iwa-git-creds-id', url: "${env.GIT_URL}"
+                git branch: 'poc-sss', url: 'https://github.com/rudiansen/IWAPharmacyDirect'
 
                 // Get Git commit details
                 script {
