@@ -160,7 +160,7 @@ pipeline {
                                             notifyEmail: "${env.SSC_NOTIFY_EMAIL}",
                                             sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
                                     ],
-                                    uploadSSC: [appName: "${env.APP_NAME}", appVersion: "${env.APP_VER}"]
+                                    uploadSSC: [appName: "${env.APP_NAME}", appVersion: "${env.SSC_APP_VERSION_ID}"]
 
                         } else {
                             // Remote analysis (using Scan Central)
