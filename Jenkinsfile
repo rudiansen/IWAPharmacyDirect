@@ -80,9 +80,7 @@ pipeline {
     // }
 
     stages {
-        stage('Build') {
-            // Run on "poc-sss" node
-            agent { label 'poc-sss' }
+        stage('Build') {            
             steps {
                 // Get some code from a GitHub repository
                 // git credentialsId: 'iwa-git-creds-id', url: "${env.GIT_URL}"
