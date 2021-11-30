@@ -125,119 +125,59 @@ pipeline {
             }
         }
 
-        // stage('SAST') {
-        //     when {
-        //         beforeAgent true
-        //         anyOf {
-        //             expression { params.SCA_LOCAL == true }
-        //             expression { params.SCANCENTRAL_SAST == true }
-        //             expression { params.FOD_SAST == true }
-        //         }
-        //     }
-        //     // Run on an Agent with "fortify" label applied
-        //     agent {label "fortify"}
-        //     steps {
-        //         script {
-        //             // Get code from Git repository so we can recompile it
-        //             git credentialsId: 'iwa-git-creds-id', url: "${env.GIT_URL}"
+        stage('SAST') {           
+            steps {
+                script {
+                    // Get code from Git repository so we can recompile it
+                    //git credentialsId: 'iwa-git-creds-id', url: "${env.GIT_URL}"
+                    git branch: 'poc-sss', url: 'https://github.com/rudiansen/IWAPharmacyDirect'
 
-        //             // Run Maven debug compile, download dependencies (if required) and package up for FOD
-        //             if (isUnix()) {
-        //                 sh "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify"
-        //                 sh "mvn dependency:build-classpath -Dmdep.regenerateFile=true -Dmdep.outputFile=${env.WORKSPACE}/cp.txt"
-        //             } else {
-        //                 bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify"
-        //                 bat "mvn dependency:build-classpath -Dmdep.regenerateFile=true -Dmdep.outputFile=${env.WORKSPACE}/cp.txt"
-        //             }
+                    // Run Maven debug compile, download dependencies (if required) and package up for FOD
+                    if (isUnix()) {
+                        sh "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify"
+                        sh "mvn dependency:build-classpath -Dmdep.regenerateFile=true -Dmdep.outputFile=${env.WORKSPACE}/cp.txt"
+                    } else {
+                        bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify"
+                        bat "mvn dependency:build-classpath -Dmdep.regenerateFile=true -Dmdep.outputFile=${env.WORKSPACE}/cp.txt"
+                    }
 
-        //             // read contents of classpath file
-        //             def classpath = readFile "${env.WORKSPACE}/cp.txt"
-        //             println "Using classpath: $classpath"
+                    // read contents of classpath file
+                    def classpath = readFile "${env.WORKSPACE}/cp.txt"
+                    println "Using classpath: $classpath"
 
-        //             if (params.FOD_SAST) {
-        //                 // recommended FOD integration is via API Key/Secret but can be by PAT if needed
-        //                 fodStaticAssessment bsiToken: '',
-        //                         releaseId: "${env.FOD_RELEASE_ID}",
-        //                         entitlementPreference: 'SubscriptionOnly',
-        //                         inProgressBuildResultType: 'WarnBuild',
-        //                         inProgressScanActionType: 'Queue',
-        //                         remediationScanPreferenceType: 'NonRemediationScanOnly',
-        //                         srcLocation: "${env.FOD_UPLOAD_DIR}"
-        //                         //tenantId: 'tenant',
-        //                         //username: 'jenkins',
-        //                         //personalAccessToken: 'fod-jenkins-api-secret'
+                    if (params.SCANCENTRAL_SAST) {
 
-        //                 fodPollResults bsiToken: '',
-        //                         releaseId: "${env.FOD_RELEASE_ID}",
-        //                         policyFailureBuildResultPreference: 1,
-        //                         pollingInterval: 5
-        //                         //tenantId: 'tenant',
-        //                         //username: 'jenkins',
-        //                         //personalAccessToken: 'fod-jenkins-api-secret'
+                        // set any standard remote translation/scan options
+                        fortifyRemoteArguments transOptions: '',
+                                scanOptions: ''
 
-        //             } else if (params.SCANCENTRAL_SAST) {
+                        if (params.UPLOAD_TO_SSC) {
+                            // Remote analysis (using Scan Central) and upload to SSC
+                            fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml'),
+                                    remoteOptionalConfig: [
+                                            customRulepacks: '',
+                                            filterFile: "etc\\sca-filter.txt",
+                                            notifyEmail: "${env.SSC_NOTIFY_EMAIL}",
+                                            sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
+                                    ],
+                                    uploadSSC: [appName: "${env.APP_NAME}", appVersion: "${env.APP_VER}"]
 
-        //                 // set any standard remote translation/scan options
-        //                 fortifyRemoteArguments transOptions: '',
-        //                         scanOptions: ''
-
-        //                 if (params.UPLOAD_TO_SSC) {
-        //                     // Remote analysis (using Scan Central) and upload to SSC
-        //                     fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml'),
-        //                             remoteOptionalConfig: [
-        //                                     customRulepacks: '',
-        //                                     filterFile: "etc\\sca-filter.txt",
-        //                                     notifyEmail: "${env.SSC_NOTIFY_EMAIL}",
-        //                                     sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
-        //                             ],
-        //                             uploadSSC: [appName: "${env.APP_NAME}", appVersion: "${env.APP_VER}"]
-
-        //                 } else {
-        //                     // Remote analysis (using Scan Central)
-        //                     fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml'),
-        //                             remoteOptionalConfig: [
-        //                                     customRulepacks: '',
-        //                                     filterFile: "etc\\sca-filter.txt",
-        //                                     notifyEmail: "${env.SSC_NOTIFY_EMAIL}",
-        //                                     sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
-        //                             ]
-        //                 }
-        //             } else if (params.SCA_LOCAL) {
-        //                 // optional: update scan rules
-        //                 //fortifyUpdate updateServerURL: 'https://update.fortify.com'
-
-        //                 // Clean project and scan results from previous run
-        //                 fortifyClean buildID: "${env.COMPONENT_NAME}",
-        //                         logFile: "${env.COMPONENT_NAME}-clean.log"
-
-        //                 // Translate source files
-        //                 fortifyTranslate buildID: "${env.COMPONENT_NAME}",
-        //                         projectScanType: fortifyJava(javaSrcFiles:
-        //                                 '\""src/main/java/**/*\"" \""src/main/resources/**/*\"" \""Dockerfile*\""',
-        //                                 javaVersion: "${env.JAVA_VERSION}",
-        //                                 javaClasspath: "$classpath"),
-        //                         addJVMOptions: '',
-        //                         logFile: "${env.COMPONENT_NAME}-translate.log"
-
-        //                 // Scan source files
-        //                 fortifyScan buildID: "${env.COMPONENT_NAME}",
-        //                         addOptions: '"-filter" "etc\\sca-filter.txt"',
-        //                         resultsFile: "${env.COMPONENT_NAME}.fpr",
-        //                         addJVMOptions: '',
-        //                         logFile: "${env.COMPONENT_NAME}-scan.log"
-
-        //                 if (params.UPLOAD_TO_SSC) {
-        //                     // Upload to SSC
-        //                     fortifyUpload appName: "${env.APP_NAME}",
-        //                             appVersion: "${env.APP_VER}",
-        //                             resultsFile: "${env.COMPONENT_NAME}.fpr"
-        //                 }
-        //             } else {
-        //                 println "No Static Application Security Testing (SAST) to do."
-        //             }
-        //         }
-        //     }
-        // }
+                        } else {
+                            // Remote analysis (using Scan Central)
+                            fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml'),
+                                    remoteOptionalConfig: [
+                                            customRulepacks: '',
+                                            filterFile: "etc\\sca-filter.txt",
+                                            notifyEmail: "${env.SSC_NOTIFY_EMAIL}",
+                                            sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
+                                    ]
+                        }                    
+                    } else {
+                        println "No Static Application Security Testing (SAST) to do."
+                    }
+                }
+            }
+        }
 
         // stage('SCA OSS') {
         //     when {
