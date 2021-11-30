@@ -64,8 +64,7 @@ pipeline {
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
         JAVA_VERSION = 8                                    // Java version to compile as           
 
-        // Credential references
-        GIT_CREDS = credentials('iwa-git-creds-id')
+        // Credential references        
         SSC_AUTH_TOKEN = credentials('iwa-ssc-ci-token-id')    
 
         // The following are defaulted and can be overriden by creating a "Build parameter" of the same name
