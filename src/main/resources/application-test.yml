@@ -27,7 +27,7 @@ spring:
   datasource:
     # h2 database
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:iwa_test
+    url: jdbc:h2:mem:iwa_test;DB_CLOSE_ON_EXIT=FALSE
     username: sa
     password: password
     initialization-mode: always
