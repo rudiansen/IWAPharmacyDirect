@@ -12,6 +12,7 @@ pool:
 steps:
 
 - task: Maven@3
+  displayName: 'Maven package'
   inputs:
     mavenPomFile: 'pom.xml'
     options: '-Dmaven.compiler.debuglevel=lines,vars,source -Dskip.unit.tests=false -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest"'
